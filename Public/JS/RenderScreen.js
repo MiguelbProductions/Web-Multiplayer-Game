@@ -1,9 +1,11 @@
-export default function RenderCanvas(GAME, CONTEXT) {
+export default function RenderCanvas(GAME, CONTEXT, PLAYERID) {
     CONTEXT.fillStyle = "white"
     CONTEXT.clearRect(0, 0, GAME.STATE.Size.width, GAME.STATE.Size.height)
 
     for (const [key, Player] of Object.entries(GAME.STATE.Players)) {
-        CONTEXT.fillStyle = "black"
+        if (key == PLAYERID) CONTEXT.fillStyle = "black"
+        else CONTEXT.fillStyle = "gray"
+
         CONTEXT.fillRect(Player.x, Player.y, 1, 1)
     }
 
@@ -13,6 +15,6 @@ export default function RenderCanvas(GAME, CONTEXT) {
     }
 
     requestAnimationFrame(() => {
-        RenderCanvas(GAME, CONTEXT, GAME.STATE.Size.width, GAME.STATE.Size.height)
+        RenderCanvas(GAME, CONTEXT, PLAYERID)
     })
 }

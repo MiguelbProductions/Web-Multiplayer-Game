@@ -8,21 +8,49 @@ export default function CreateGame() {
         }
     } 
 
+    const observers = []
+
+    function Subscribe(ObserverFunction) {
+        observers.push(ObserverFunction)
+    }
+
+    function NotifyAll(command) {
+        for (const ObserverFunction of observers) {
+            ObserverFunction(command)
+        }
+    }
+    
+    function SetState(newState) {
+        Object.assign(STATE, newState)
+    }
+
     function AddPlayer(command) {
         const PLAYER_ID = command.Player_ID
-        const PLAYER_X = command.Player_X
-        const PLAYER_Y  = command.Player_Y
+        const PLAYER_X = "PLAYER_X" in command ? command.PLAYER_X : Math.floor(Math.random() * STATE.Size.width)
+        const PLAYER_Y  = "PLAYER_Y" in command ? command.PLAYER_Y : Math.floor(Math.random() * STATE.Size.height)
 
         STATE.Players[PLAYER_ID] = {
             x: PLAYER_X,
             y: PLAYER_Y
         }
+
+        NotifyAll({
+            type: "AddPlayer",
+            Player_ID: PLAYER_ID,
+            PLAYER_X: PLAYER_X,
+            PLAYER_Y: PLAYER_Y
+        })
     }
 
     function RemovePlayer(command) {
         const PLAYER_ID = command.Player_ID
 
         delete STATE.Players[PLAYER_ID]
+
+        NotifyAll({
+            type: "RemovePlayer",
+            Player_ID: PLAYER_ID,
+        })
     }
 
     function AddFruit(command) {
@@ -85,10 +113,11 @@ export default function CreateGame() {
             CheckForFruitCollision(CURRENT_PLAYER);
         }
     }
-    
 
     return {
         STATE,
+        SetState,
+        Subscribe,
         AddPlayer,
         RemovePlayer,
         AddFruit,
