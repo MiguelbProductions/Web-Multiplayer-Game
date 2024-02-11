@@ -57,6 +57,15 @@ Sockets.on("connection", (socket) => {
         }
     })
 
+    socket.on("ClearScore", () => {
+        for (const [key, Player] of Object.entries(GAME.STATE.Players)) {
+            GAME.STATE.Players[key].points = 0
+        }
+
+        Sockets.emit("SetGlobalScore", { Players: GAME.STATE.Players })
+        
+    })
+
     socket.on("SetGlobalWallWrapping", (command) => {
         Sockets.emit("SetWallWrapping", command)
     })

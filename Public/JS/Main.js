@@ -77,6 +77,19 @@ $(document).ready(function() {
         GAME.SetWallWrapping(command)
     });  
 
+    SOCKET.on("SetGlobalScore", (command) => {
+        for (const [key, Player] of Object.entries(GAME.STATE.Players)) {
+            GAME.STATE.Players[key].points = command.Players[key].points
+        }
+        
+        const tbody = document.querySelector("#ScoreBoard-Table tbody");
+        tbody.innerHTML = '';
+
+        for (const [playerID, playerInfo] of Object.entries(GAME.STATE.Players)) {
+            updateScoreBoard(playerID, playerInfo);
+        }
+    }); 
+
     function updateScoreBoard(playerID, playerInfo, RemovePlayer = false) {
         const playerRow = document.querySelector(`#ScoreBoard-Table tr[data-player-id="${playerID}"]`);
     
@@ -106,6 +119,7 @@ $(document).ready(function() {
 
     $("#start-game").click(() => { SOCKET.emit("StartGame") })
     $("#stop-game").click(() => { SOCKET.emit("StopGame") })
+    $("#clear-score").click(() => { SOCKET.emit("ClearScore") })
 
     $('#toggle-walls').on('change', function() {
         const shouldWrap = $(this).is(':checked');
