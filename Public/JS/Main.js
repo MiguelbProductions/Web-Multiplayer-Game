@@ -31,8 +31,6 @@ $(document).ready(function() {
             SOCKET.emit(command.type, command)
         })
 
-        console.log(State.Players)
-
         const players = State.Players
 
         for (const [playerID, playerInfo] of Object.entries(players)) {
@@ -42,10 +40,14 @@ $(document).ready(function() {
 
     SOCKET.on("AddPlayer", (command) => {
         GAME.AddPlayer(command)
+
+        updateScoreBoard(command.Player_ID, GAME.STATE.Players[command.Player_ID])
     })
 
     SOCKET.on("RemovePlayer", (command) => {
         GAME.RemovePlayer(command)
+
+        updateScoreBoard(command.Player_ID, GAME.STATE.Players[command.Player_ID], true)
     })
 
     SOCKET.on("PlayerMoved", (command) => {
@@ -75,26 +77,30 @@ $(document).ready(function() {
         GAME.SetWallWrapping(command)
     });  
 
-    function updateScoreBoard(playerID, playerInfo) {
+    function updateScoreBoard(playerID, playerInfo, RemovePlayer = false) {
         const playerRow = document.querySelector(`#ScoreBoard-Table tr[data-player-id="${playerID}"]`);
     
-        if (playerRow) {
-            const pointsCell = playerRow.querySelector("td:nth-child(2)");
-            pointsCell.innerText = playerInfo.points;
+        if (RemovePlayer) {
+            playerRow.remove()
         } else {
-            const row = document.createElement("tr");
-            row.setAttribute("data-player-id", playerID);
-    
-            const nameCell = document.createElement("td");
-            nameCell.innerText = playerID;
-    
-            const pointsCell = document.createElement("td");
-            pointsCell.innerText = playerInfo.points;
-    
-            row.appendChild(nameCell);
-            row.appendChild(pointsCell);
-    
-            document.querySelector("#ScoreBoard-Table tbody").appendChild(row);
+            if (playerRow) {
+                const pointsCell = playerRow.querySelector("td:nth-child(2)");
+                pointsCell.innerText = playerInfo.points;
+            } else {
+                const row = document.createElement("tr");
+                row.setAttribute("data-player-id", playerID);
+        
+                const nameCell = document.createElement("td");
+                nameCell.innerText = playerID;
+        
+                const pointsCell = document.createElement("td");
+                pointsCell.innerText = playerInfo.points;
+        
+                row.appendChild(nameCell);
+                row.appendChild(pointsCell);
+        
+                document.querySelector("#ScoreBoard-Table tbody").appendChild(row);
+            }
         }
     }
 
