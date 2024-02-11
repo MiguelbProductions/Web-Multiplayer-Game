@@ -6,13 +6,16 @@ import CreateGame from "./Public/JS/Game.js"
 const App = express()
 const Server = http.createServer(App)
 const Sockets = socketio(Server)
-
-const PORT = 3000
+const GAME = CreateGame()
 
 App.use(express.static("Public"))
 
-const GAME = CreateGame()
-GAME.AddFruit({ Fruit_ID: "Fruit1" , Fruit_X: 4, Fruit_Y: 4})
+function GenerateFruit() {
+    GAME.AddFruit()
+    Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
+}
+
+GenerateFruit()
 
 GAME.Subscribe((command) => {
     Sockets.emit(command.type, command)
@@ -34,10 +37,11 @@ Sockets.on("connection", (socket) => {
     socket.on("MovePlayer", (command) => {
         GAME.MovePlayer(command);
 
-        Sockets.emit("PlayerMoved", command);
+        Sockets.emit("PlayerMoved", command)
     });
 })
 
+const PORT = 3000
 Server.listen(PORT, () => {
     console.log(`Pixel Rush Server started on port ${PORT}`);
 })

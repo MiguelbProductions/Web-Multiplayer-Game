@@ -5,11 +5,12 @@ import RenderCanvas from "./RenderScreen.js"
 $(document).ready(function() {
     const SCREEN = $("#game-canvas")[0]
     const CONTEXT = SCREEN.getContext("2d")
-    
-    const SOCKET = io()
+
+    const CURRENTPLAYER_ID = "Player1"
 
     const GAME = CreateGame()
-    const KEYBOARD_LISTENER = createKeyBoardListener(SOCKET)
+    const KEYBOARD_LISTENER = createKeyBoardListener()
+    const SOCKET = io()
 
     SOCKET.on("connect", () => {
         const PLAYERID = SOCKET.id
@@ -26,6 +27,9 @@ $(document).ready(function() {
 
         KEYBOARD_LISTENER.RegisterPlayerID({ PlayerID: PLAYERID })
         KEYBOARD_LISTENER.subscribe(GAME.MovePlayer)
+        KEYBOARD_LISTENER.subscribe((command) => {
+            SOCKET.emit(command.type, command)
+        })
     })
 
     SOCKET.on("AddPlayer", (command) => {
@@ -39,5 +43,8 @@ $(document).ready(function() {
     SOCKET.on("PlayerMoved", (command) => {
         if (command.Player_ID != SOCKET.id) GAME.MovePlayer(command);
     });
-    
+
+    SOCKET.on("UpdateFruit", (command) => {
+        GAME.STATE.Fruits = command.Fruits
+    })
 })

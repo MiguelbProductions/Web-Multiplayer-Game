@@ -10,9 +10,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-    <canvas id="game-canvas" width="10" height="10"></canvas>
+    <div id="game-container">
+        <h1>Pixel Rush</h1>
+        <canvas id="game-canvas" width="10" height="10"></canvas>
+        <div id="game-controls">
+            <div>
+                <button id="start-game">Start Game</button> 
+                <button id="stop-game">Stop Game</button>
+            </div>
+            <div>
+                <button id="clear-score">Clear Score</button>
 
+            </div>
+        </div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="JS/Main.js"></script>
-</body> 
+</body>
 </html>

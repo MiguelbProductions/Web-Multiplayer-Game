@@ -7,7 +7,6 @@ export default function CreateGame() {
             height: 10
         }
     } 
-
     const observers = []
 
     function Subscribe(ObserverFunction) {
@@ -54,9 +53,10 @@ export default function CreateGame() {
     }
 
     function AddFruit(command) {
-        const FRUIT_ID = command.Fruit_ID
-        const FRUIT_X = command.Fruit_X
-        const FRUIT_Y  = command.Fruit_Y
+        const FRUIT_ID = command && typeof command === 'object' && "Fruit_ID" in command ? command.FRUIT_ID : Math.floor(Math.random() * 10000000);
+        const FRUIT_X = command && typeof command === 'object' && "Fruit_X" in command ? command.FRUIT_X : STATE && STATE.Size && typeof STATE.Size.width === 'number' ? Math.floor(Math.random() * STATE.Size.width) : 0; 
+        const FRUIT_Y = command && typeof command === 'object' && "Fruit_Y" in command ? command.FRUIT_Y : STATE && STATE.Size && typeof STATE.Size.width === 'number' ? Math.floor(Math.random() * STATE.Size.width) : 0; 
+    
 
         STATE.Fruits[FRUIT_ID] = {
             x: FRUIT_X,

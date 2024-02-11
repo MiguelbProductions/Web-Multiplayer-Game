@@ -1,4 +1,4 @@
-export default function createKeyBoardListener(SOCKET) {
+export default function createKeyBoardListener() {
     const STATE = {
         observers: [],
         PlayerID: ""
@@ -20,13 +20,12 @@ export default function createKeyBoardListener(SOCKET) {
 
     $(document).on("keydown", (event) => {        
         const COMMAND = {
+            type: "MovePlayer",
             Player_ID: STATE.PlayerID,
             Key_Pressed: event.key
         }
 
         notifyAll(COMMAND)
-
-        SOCKET.emit("MovePlayer", COMMAND);
     })
 
     return {
