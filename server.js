@@ -35,8 +35,8 @@ Sockets.on("connection", (socket) => {
         Sockets.emit("PlayerMoved", command)
     });
 
-    socket.on("GenerateNewFruit", () => {
-        GenerateFruit()
+    socket.on("GenerateNewFruit", (command) => {
+        GenerateFruit(command)
     })
 
     socket.on("StartGame", () => {
@@ -62,10 +62,19 @@ Sockets.on("connection", (socket) => {
     })
 })
 
-function GenerateFruit() {
+function GenerateFruit(command = null) {
     GAME.AddFruit()
 
-    Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
+    if (command) {
+        const CurrentPlayer = GAME.STATE.Players[command.Player_ID]
+
+        CurrentPlayer.points += 1
+
+        Sockets.emit("UpdateFruit", { Player_ID: command.Player_ID, Fruits: GAME.STATE.Fruits })
+    } else {
+        Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
+    }
+
 }
 
 const PORT = 3000

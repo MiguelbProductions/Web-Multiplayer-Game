@@ -32,7 +32,8 @@ export default function CreateGame() {
 
         STATE.Players[PLAYER_ID] = {
             x: PLAYER_X,
-            y: PLAYER_Y
+            y: PLAYER_Y,
+            points: 0
         }
 
         NotifyAll({
@@ -76,7 +77,7 @@ export default function CreateGame() {
         for (const [key, Fruit] of Object.entries(STATE.Fruits)) {
             if (Player.x == Fruit.x && Player.y == Fruit.y) {
                 RemoveFruit({ Fruit_ID: key })
-
+                
                 NotifyAll({
                     type: "RemoveFruit",
                     Fruit_ID: key,

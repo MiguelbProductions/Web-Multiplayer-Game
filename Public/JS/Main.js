@@ -30,6 +30,14 @@ $(document).ready(function() {
         KEYBOARD_LISTENER.subscribe((command) => {
             SOCKET.emit(command.type, command)
         })
+
+        console.log(State.Players)
+
+        const players = State.Players
+
+        for (const [playerID, playerInfo] of Object.entries(players)) {
+            updateScoreBoard(playerID, playerInfo);
+        }
     })
 
     SOCKET.on("AddPlayer", (command) => {
@@ -46,17 +54,49 @@ $(document).ready(function() {
 
     SOCKET.on("UpdateFruit", (command) => {
         GAME.STATE.Fruits = command.Fruits
+
+        const CurrentPlayer = GAME.STATE.Players[command.Player_ID]
+
+        if (CurrentPlayer) {
+            console.log(CurrentPlayer.points)
+            CurrentPlayer.points += 1
+
+            updateScoreBoard(command.Player_ID, CurrentPlayer)
+        }
     })
 
     SOCKET.on("RemoveFruit", (command) => {
         if (command.Player_ID == SOCKET.id) {
-            SOCKET.emit("GenerateNewFruit")
+            SOCKET.emit("GenerateNewFruit", command)
         }
     });
 
     SOCKET.on("SetWallWrapping", (command) => {
         GAME.SetWallWrapping(command)
-    });
+    });  
+
+    function updateScoreBoard(playerID, playerInfo) {
+        const playerRow = document.querySelector(`#ScoreBoard-Table tr[data-player-id="${playerID}"]`);
+    
+        if (playerRow) {
+            const pointsCell = playerRow.querySelector("td:nth-child(2)");
+            pointsCell.innerText = playerInfo.points;
+        } else {
+            const row = document.createElement("tr");
+            row.setAttribute("data-player-id", playerID);
+    
+            const nameCell = document.createElement("td");
+            nameCell.innerText = playerID;
+    
+            const pointsCell = document.createElement("td");
+            pointsCell.innerText = playerInfo.points;
+    
+            row.appendChild(nameCell);
+            row.appendChild(pointsCell);
+    
+            document.querySelector("#ScoreBoard-Table tbody").appendChild(row);
+        }
+    }
 
     $("#start-game").click(() => { SOCKET.emit("StartGame") })
     $("#stop-game").click(() => { SOCKET.emit("StopGame") })
