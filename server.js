@@ -8,14 +8,9 @@ const Server = http.createServer(App)
 const Sockets = socketio(Server)
 const GAME = CreateGame()
 
-App.use(express.static("Public"))
+var InGame = false
 
-function GenerateFruit() {
-    GAME.AddFruit()
-    Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
-}
-
-GenerateFruit()
+App.use(express.static("Public"))   
 
 GAME.Subscribe((command) => {
     Sockets.emit(command.type, command)
@@ -39,7 +34,39 @@ Sockets.on("connection", (socket) => {
 
         Sockets.emit("PlayerMoved", command)
     });
+
+    socket.on("GenerateNewFruit", () => {
+        GenerateFruit()
+    })
+
+    socket.on("StartGame", () => {
+        if (!InGame) {
+            InGame = true
+            
+            GenerateFruit()
+        }
+    })
+
+    socket.on("StopGame", () => {
+        if (InGame) {
+            InGame = false
+
+            GAME.STATE.Fruits = {}
+
+            Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
+        }
+    })
+
+    socket.on("SetGlobalWallWrapping", (command) => {
+        Sockets.emit("SetWallWrapping", command)
+    })
 })
+
+function GenerateFruit() {
+    GAME.AddFruit()
+
+    Sockets.emit("UpdateFruit", { Fruits: GAME.STATE.Fruits })
+}
 
 const PORT = 3000
 Server.listen(PORT, () => {

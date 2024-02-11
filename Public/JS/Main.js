@@ -47,4 +47,23 @@ $(document).ready(function() {
     SOCKET.on("UpdateFruit", (command) => {
         GAME.STATE.Fruits = command.Fruits
     })
+
+    SOCKET.on("RemoveFruit", (command) => {
+        if (command.Player_ID == SOCKET.id) {
+            SOCKET.emit("GenerateNewFruit")
+        }
+    });
+
+    SOCKET.on("SetWallWrapping", (command) => {
+        GAME.SetWallWrapping(command)
+    });
+
+    $("#start-game").click(() => { SOCKET.emit("StartGame") })
+    $("#stop-game").click(() => { SOCKET.emit("StopGame") })
+
+    $('#toggle-walls').on('change', function() {
+        const shouldWrap = $(this).is(':checked');
+        
+        SOCKET.emit("SetGlobalWallWrapping", { shouldWrap: shouldWrap })
+    });
 })

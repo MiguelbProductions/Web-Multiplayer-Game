@@ -1,20 +1,21 @@
 export default function RenderCanvas(GAME, CONTEXT, PLAYERID) {
-    CONTEXT.fillStyle = "white"
-    CONTEXT.clearRect(0, 0, GAME.STATE.Size.width, GAME.STATE.Size.height)
+    CONTEXT.clearRect(0, 0, GAME.STATE.Screen.width * 10, GAME.STATE.Screen.height * 10); 
 
+    CONTEXT.fillStyle = "gray";
     for (const [key, Player] of Object.entries(GAME.STATE.Players)) {
-        if (key == PLAYERID) CONTEXT.fillStyle = "black"
-        else CONTEXT.fillStyle = "gray"
-
-        CONTEXT.fillRect(Player.x, Player.y, 1, 1)
+        if (key !== PLAYERID) CONTEXT.fillRect(Player.x, Player.y, 1, 1); 
     }
 
+    CONTEXT.fillStyle = "green";
     for (const [key, Fruit] of Object.entries(GAME.STATE.Fruits)) {
-        CONTEXT.fillStyle = "green"
-        CONTEXT.fillRect(Fruit.x, Fruit.y, 1, 1)
+        CONTEXT.fillRect(Fruit.x, Fruit.y, 1, 1);
     }
+
+    CONTEXT.fillStyle = "black";
+    const currentPlayer = GAME.STATE.Players[PLAYERID];
+    if (currentPlayer) CONTEXT.fillRect(currentPlayer.x, currentPlayer.y, 1, 1)
 
     requestAnimationFrame(() => {
-        RenderCanvas(GAME, CONTEXT, PLAYERID)
-    })
+        RenderCanvas(GAME, CONTEXT, PLAYERID);
+    });
 }

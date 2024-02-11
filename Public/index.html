@@ -13,17 +13,38 @@
     <div id="game-container">
         <h1>Pixel Rush</h1>
         <canvas id="game-canvas" width="10" height="10"></canvas>
-        <div id="game-controls">
-            <div>
+        <div id="game-controls" style="display: none;">
+            <label>
                 <button id="start-game">Start Game</button> 
                 <button id="stop-game">Stop Game</button>
-            </div>
-            <div>
+            </label>
+            <label>
                 <button id="clear-score">Clear Score</button>
+            </label>
+            <label class="label-custom">
+                <input type="checkbox" id="toggle-walls">
+                <span class="switch"></span>
+                Toogle Wall Wrapping
+            </label>
+        </div>
 
-            </div>
+        <div id="Score-Board">
+
         </div>
     </div>
+
+    <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'p' || event.key === 'P') {
+                var gameControls = document.getElementById("game-controls");
+                if (gameControls.style.display === "none" || gameControls.style.display === "") {
+                    gameControls.style.display = "flex";
+                } else {
+                    gameControls.style.display = "none";
+                }
+            }
+        });
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="JS/Main.js"></script>
 </body>
