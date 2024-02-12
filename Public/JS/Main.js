@@ -6,19 +6,32 @@ $(document).ready(function() {
     const SCREEN = $("#game-canvas")[0]
     const CONTEXT = SCREEN.getContext("2d")
 
-    const CURRENTPLAYER_ID = "Player1"
-
     const GAME = CreateGame()
     const KEYBOARD_LISTENER = createKeyBoardListener()
     const SOCKET = io()
 
-    SOCKET.on("connect", () => {
+    function askForName() {
+        var name = prompt("Your Name: ");
+
+        if (name) SOCKET.emit("CheckName", { name: name })
+        else {
+            alert("Name cannot be empty. Please choose one name.")
+            askForName()
+        }
+    }
+
+    SOCKET.on('NameExists', function() {
+        alert("Name already in use. Please choose another.")
+        askForName()
+    });
+
+    SOCKET.on('NameAccepted', function() {
         const PLAYERID = SOCKET.id
         
         console.log(`Player connected on client with id ${PLAYERID}`)
 
         RenderCanvas(GAME, CONTEXT, PLAYERID)
-    })
+    });
 
     SOCKET.on("setup", (State) => {
         const PLAYERID = SOCKET.id
@@ -60,7 +73,6 @@ $(document).ready(function() {
         const CurrentPlayer = GAME.STATE.Players[command.Player_ID]
 
         if (CurrentPlayer) {
-            console.log(CurrentPlayer.points)
             CurrentPlayer.points += 1
 
             updateScoreBoard(command.Player_ID, CurrentPlayer)
@@ -90,6 +102,8 @@ $(document).ready(function() {
         }
     }); 
 
+    askForName()
+
     function updateScoreBoard(playerID, playerInfo, RemovePlayer = false) {
         const playerRow = document.querySelector(`#ScoreBoard-Table tr[data-player-id="${playerID}"]`);
     
@@ -104,7 +118,7 @@ $(document).ready(function() {
                 row.setAttribute("data-player-id", playerID);
         
                 const nameCell = document.createElement("td");
-                nameCell.innerText = playerID;
+                nameCell.innerText = playerInfo.name;
         
                 const pointsCell = document.createElement("td");
                 pointsCell.innerText = playerInfo.points;

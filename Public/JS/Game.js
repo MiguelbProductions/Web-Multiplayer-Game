@@ -33,14 +33,16 @@ export default function CreateGame() {
         STATE.Players[PLAYER_ID] = {
             x: PLAYER_X,
             y: PLAYER_Y,
-            points: 0
+            name: command.Name,
+            points: 0,
         }
 
         NotifyAll({
             type: "AddPlayer",
             Player_ID: PLAYER_ID,
             PLAYER_X: PLAYER_X,
-            PLAYER_Y: PLAYER_Y
+            PLAYER_Y: PLAYER_Y,
+            Name: command.Name,
         })
     }
 

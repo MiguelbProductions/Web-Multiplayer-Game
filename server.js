@@ -21,9 +21,16 @@ Sockets.on("connection", (socket) => {
     
     console.log(`Player connected on server with id ${PlayerID}`)
 
-    GAME.AddPlayer({ Player_ID: PlayerID})
+    socket.on("CheckName", (command) => {
+        if (Object.keys(GAME.STATE.Players).length !== 0 && Object.values(GAME.STATE.Players).some(player => player.name === command.name)) socket.emit('NameExists')
+        else {
+            GAME.AddPlayer({ Player_ID: PlayerID, Name: command.name})
 
-    socket.emit("setup", GAME.STATE)
+            socket.emit("setup", GAME.STATE)
+            socket.emit('NameAccepted')
+        }
+    });
+
 
     socket.on("disconnect", () => {
         GAME.RemovePlayer({ Player_ID: PlayerID })
@@ -86,7 +93,7 @@ function GenerateFruit(command = null) {
 
 }
 
-const PORT = 3000
+const PORT = 7001
 Server.listen(PORT, () => {
     console.log(`Pixel Rush Server started on port ${PORT}`);
 })
